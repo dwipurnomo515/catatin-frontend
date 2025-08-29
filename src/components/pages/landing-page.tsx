@@ -7,11 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DollarSign,
-  PieChart,
-  TrendingUp
-} from "lucide-react";
+import { DollarSign, PieChart, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router";
 
 export default function LandingPage() {
@@ -86,7 +82,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate("/demo")}
+              onClick={() => navigate("/login")}
               className="text-lg px-8"
             >
               Log In
