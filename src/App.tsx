@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
 
-import DashPage from "./components/pages/dashboard-page";
+import DashboardPage from "./components/pages/dashboard-page";
 import LoginPage from "./components/pages/login-page";
 import RegisterPage from "./components/pages/register-page";
 import LandingPage from "./components/pages/landing-page";
-import { PrivateRoute } from "./layouts/private-layout";
+import PrivateRoute from "./layouts/private-layout";
 
 function App() {
   const router = createBrowserRouter([
@@ -14,7 +14,7 @@ function App() {
       children: [
         {
           path: "/dashboard",
-          Component: DashPage,
+          Component: DashboardPage
         },
       ],
     },
