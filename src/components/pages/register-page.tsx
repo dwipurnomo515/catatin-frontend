@@ -71,7 +71,7 @@ export default function RegisterPage() {
                 <div className="space-y-2">
                   <FormField
                     control={form.control}
-                    name={"username"}
+                    name={"name"}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel htmlFor="name">Username</FormLabel>
