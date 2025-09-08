@@ -34,13 +34,13 @@ export default function AppSidebar() {
     },
     {
       name: "Transactions",
-      href: "/transactions",
+      href: "/transaction",
       icon: ArrowLeftRight,
       description: "Manage income & expenses",
     },
     {
       name: "Reports",
-      href: "/reports",
+      href: "/report",
       icon: BarChart3,
       description: "Analytics and statistics",
     },
