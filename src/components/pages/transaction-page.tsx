@@ -37,6 +37,7 @@ import FilterTransaction from "../hooks/filter-transaction-hooks";
 import ModalAddTransaction from "../modal/modal-add-transaction";
 import ModalEditTransaction from "../modal/modal-edit-transaction";
 import { AlertDelete } from "../modal/alert-delete";
+import ModalCategory from "../modal/modal-category";
 
 export default function Transactions() {
   const categories = [
@@ -121,8 +122,22 @@ export default function Transactions() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Category</Label>
+            <div className="space-y-1.5">
+              <div className="flex justify-between">
+                <Label>Category</Label>
+                <ModalCategory
+                  triger={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto text-xs"
+                    >
+                      <Edit className="" />
+                      Manage
+                    </Button>
+                  }
+                />
+              </div>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select category" />
@@ -137,7 +152,7 @@ export default function Transactions() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Date</Label>
               <div className="flex gap-1">
                 <Popover>

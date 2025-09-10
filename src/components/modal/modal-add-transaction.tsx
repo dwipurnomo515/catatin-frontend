@@ -175,7 +175,7 @@ export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
             </div>
 
             <DialogFooter className="mt-4">
-              <Button variant="outline">Cancel</Button>
+              
               <Button type="submit">Add</Button>
             </DialogFooter>
           </form>
