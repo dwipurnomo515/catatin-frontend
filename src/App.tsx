@@ -7,6 +7,7 @@ import RegisterPage from "./components/pages/register-page";
 import LandingPage from "./components/pages/landing-page";
 import PrivateRoute from "./layouts/private-layout";
 import TransactionsPage from "./components/pages/transaction-page";
+import ReportPage from "./components/pages/report-page";
 
 function App() {
   const router = createBrowserRouter([
@@ -15,11 +16,15 @@ function App() {
       children: [
         {
           path: "/dashboard",
-          Component: DashboardPage
+          Component: DashboardPage,
         },
         {
           path: "/transaction",
-          Component: TransactionsPage
+          Component: TransactionsPage,
+        },
+        {
+          path: "/report",
+          Component: ReportPage,
         },
       ],
     },
