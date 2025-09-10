@@ -1,33 +1,37 @@
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import type { ReactNode } from "react";
 import EditTransactionHooks from "../hooks/edit-transaction-hooks";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "../ui/form";
 
-export default function ModalEditTransaction({ triger }: { triger: ReactNode }) {
+export default function ModalEditTransaction({
+  triger,
+}: {
+  triger: ReactNode;
+}) {
   const categories = [
     "Salary",
     "Freelance",
@@ -46,9 +50,7 @@ export default function ModalEditTransaction({ triger }: { triger: ReactNode }) 
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        {triger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{triger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Transaction</DialogTitle>
@@ -175,7 +177,6 @@ export default function ModalEditTransaction({ triger }: { triger: ReactNode }) 
             </div>
 
             <DialogFooter className="mt-4">
-              <Button variant="outline">Cancel</Button>
               <Button type="submit">Save</Button>
             </DialogFooter>
           </form>
