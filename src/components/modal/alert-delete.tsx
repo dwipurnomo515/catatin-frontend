@@ -9,8 +9,43 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import api from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import { toast } from "sonner";
 
-export function AlertDelete({ trigger }: { trigger: React.ReactNode }) {
+type Delete = {
+  id: string;
+  trigger: ReactNode;
+  invalidate: string;
+  url: string;
+  id2?: string;
+};
+
+export function AlertDelete({ trigger, id, url, invalidate }: Delete) {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useMutation<any, Error, any>({
+    mutationKey: ["delete"],
+    mutationFn: async () => {
+      const response = await api.delete(`/${url}/${id}`);
+
+      return response.data;
+    },
+    onError: () => {
+      toast.error("something wrong");
+    },
+    onSuccess: async () => {
+      toast.success("Deleted");
+      await queryClient.invalidateQueries({
+        queryKey: [`${invalidate}`],
+      });
+    },
+  });
+
+  const onSubmit = async (data: string) => {
+    await mutateAsync(data);
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
@@ -24,7 +59,11 @@ export function AlertDelete({ trigger }: { trigger: React.ReactNode }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="hover:bg-red-500 flex items-center justify-center gap-2">
+          <AlertDialogAction
+            onClick={() => onSubmit(id)}
+            disabled={isPending}
+            className="hover:bg-red-500 flex items-center justify-center gap-2"
+          >
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>
