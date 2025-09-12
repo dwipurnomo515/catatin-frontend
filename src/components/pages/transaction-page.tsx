@@ -51,7 +51,7 @@ export default function Transactions() {
     "Health",
     "Education",
     "Utilities",
-    "Shopping", // Expense categories
+    "Shopping",
   ];
 
   const {

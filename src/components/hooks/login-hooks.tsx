@@ -29,8 +29,8 @@ export default function LoginHooks() {
       return response.data;
     },
     onSuccess: (data) => {
-    setToken(data.token) // otomatis masuk ke cookies juga
-      navigate("/dashboard"); // redirect ke dashboard
+    setToken(data.token) 
+      navigate("/dashboard"); 
     },
     onError: (error: any) => {
       console.error("Login gagal:", error?.response?.data || error.message);

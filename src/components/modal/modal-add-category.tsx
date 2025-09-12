@@ -8,8 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import type { ReactNode } from "react";
 import AddCategoryHooks from "../hooks/add-category-hooks";
 import {
@@ -20,9 +18,18 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export default function ModalAddCategory({ triger }: { triger: ReactNode }) {
-  const { form, onSubmit } = AddCategoryHooks();
+  const { form, onSubmit, closeRef, mutation } = AddCategoryHooks();
 
   return (
     <Dialog>
@@ -58,9 +65,43 @@ export default function ModalAddCategory({ triger }: { triger: ReactNode }) {
                   )}
                 />
               </div>
+              <div className="space-y-2">
+                <FormField
+                  name="type"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="income">Income</SelectItem>
+                          <SelectItem value="expense">Expense</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <DialogFooter>
-              <Button>Add Category</Button>
+              <DialogClose asChild>
+                <Button
+                  disabled={mutation.isPending}
+                  ref={closeRef}
+                  type="submit"
+                >
+                  {mutation.isPending ? "Adding..." : "Add Category"}
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>
