@@ -24,9 +24,9 @@ export default function AddCategoryHooks() {
       queryClient.invalidateQueries({
         queryKey: ["category"],
       })
+      toast.success("Category added");
       closeRef.current?.click();
       form.reset();
-      toast.success("Category added");
     },
     onError: (error: any) => {
       console.error("Category gagal:", error?.response?.data || error.message);

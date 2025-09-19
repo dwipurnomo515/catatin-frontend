@@ -11,8 +11,13 @@ export default function GetCategory() {
     },
   });
 
+  function getCategoryName(id: number) {
+    return categories?.find((c) => c.id === id)?.name ?? "Unknown";
+  }
   return{
     categories,
-    isPending
+    isPending,
+    getCategoryName
   }
 }
+
