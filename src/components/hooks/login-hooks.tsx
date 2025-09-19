@@ -31,6 +31,7 @@ export default function LoginHooks() {
     onSuccess: (data) => {
     setToken(data.token) 
       navigate("/dashboard"); 
+      console.log(data,"ini user login");
     },
     onError: (error: any) => {
       console.error("Login gagal:", error?.response?.data || error.message);

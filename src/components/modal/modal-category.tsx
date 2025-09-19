@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {  Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import ModalAddCategory from "./modal-add-category";
 import GetCategory from "../hooks/get-category";
@@ -45,11 +45,13 @@ export default function ModalCategory({ triger }: { triger: ReactNode }) {
                     <span className="font-medium text-foreground">
                       {category.name}
                     </span>
-                    <Badge variant="secondary" className="mt-2">{category.type}</Badge>
+                    <Badge variant="secondary" className="mt-2">
+                      {category.type}
+                    </Badge>
                   </div>
 
                   <AlertDelete
-                    id={category.id || ""}
+                    id={category.id}
                     url="categories"
                     invalidate="category"
                     trigger={

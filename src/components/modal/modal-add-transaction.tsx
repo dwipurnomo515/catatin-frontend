@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -26,23 +27,15 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import GetCategory from "../hooks/get-category";
 
 export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
-  const categories = [
-    "Salary",
-    "Freelance",
-    "Bonus",
-    "Investment",
-    "Food",
-    "Transport",
-    "Entertainment",
-    "Health",
-    "Education",
-    "Utilities",
-    "Shopping",
-  ];
+  const { categories, isPending } = GetCategory();
+  const { form, onSubmit, closeRef, mutation } = AddTransactionHooks();
 
-  const { form, onSubmit } = AddTransactionHooks();
+  if (isPending || !categories) {
+    return "loading...";
+  }
 
   return (
     <Dialog>
@@ -94,14 +87,7 @@ export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
                       <FormItem>
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
-                            }
-                          />
+                          <Input type="number" placeholder="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -112,14 +98,14 @@ export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
               <div className="space-y-2">
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="category_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
 
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        defaultValue={String(field.value)}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
@@ -127,9 +113,12 @@ export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
+                          {categories?.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={String(category.id)}
+                            >
+                              {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -175,8 +164,15 @@ export default function ModalAddTransaction({ triger }: { triger: ReactNode }) {
             </div>
 
             <DialogFooter className="mt-4">
-              
-              <Button type="submit">Add</Button>
+              <DialogClose asChild>
+                <Button
+                  disabled={mutation.isPending}
+                  ref={closeRef}
+                  type="submit"
+                >
+                  {mutation.isPending ? "Adding..." : "Add Transaction"}
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>
