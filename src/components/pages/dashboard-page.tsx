@@ -16,86 +16,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import type { Transaction, CategoryBreakdown } from "@/schemas/dashboard";
+
+
 
 export default function Dashboard() {
-  // Mock data
-  const summary = {
-    totalIncome: 15000000,
-    totalExpense: 8500000,
-    balance: 6500000,
-    monthlyGrowth: 12.5,
-  };
 
-  const recentTransactions = [
-    {
-      id: 1,
-      type: "income",
-      amount: 5000000,
-      category: "Salary",
-      description: "Monthly salary",
-      date: "2024-01-15",
-    },
-    {
-      id: 2,
-      type: "expense",
-      amount: 500000,
-      category: "Food",
-      description: "Groceries",
-      date: "2024-01-14",
-    },
-    {
-      id: 3,
-      type: "expense",
-      amount: 200000,
-      category: "Transport",
-      description: "Gasoline",
-      date: "2024-01-13",
-    },
-    {
-      id: 4,
-      type: "income",
-      amount: 1000000,
-      category: "Freelance",
-      description: "Website project",
-      date: "2024-01-12",
-    },
-    {
-      id: 5,
-      type: "expense",
-      amount: 150000,
-      category: "Entertainment",
-      description: "Movie night",
-      date: "2024-01-11",
-    },
-  ];
-
-  const categories = [
-    {
-      name: "Food",
-      amount: 2500000,
-      percentage: 45,
-      color: "hsl(var(--primary))",
-    },
-    {
-      name: "Transport",
-      amount: 1500000,
-      percentage: 27,
-      color: "hsl(var(--success))",
-    },
-    {
-      name: "Entertainment",
-      amount: 800000,
-      percentage: 14,
-      color: "hsl(var(--warning))",
-    },
-    {
-      name: "Others",
-      amount: 700000,
-      percentage: 14,
-      color: "hsl(var(--muted))",
-    },
-  ];
-
+  const { data, isLoading, isError } = useDashboardData();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -103,6 +31,21 @@ export default function Dashboard() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+
+    if (isLoading) return <div>Loading dashboard...</div>;
+    if (isError || !data) return <div>Failed to load dashboard data</div>;
+
+    const summary = {
+      totalIncome: data.total_income,
+      totalExpense: data.total_expense,
+      balance: data.balance,
+      monthlyGrowth: data.monthly_growth,
+    };
+
+    const recentTransactions = data.recent_transactions;
+    const categories = data.category_breakdown;
+
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -200,7 +143,7 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentTransactions.slice(0, 5).map((transaction) => (
+              {recentTransactions.slice(0, 5).map((transaction : Transaction) => (
                 <div
                   key={transaction.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
@@ -255,7 +198,7 @@ export default function Dashboard() {
               <CardDescription>This month’s breakdown</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {categories.map((category, index) => (
+              {categories.map((category : CategoryBreakdown, index : number) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">{category.name}</span>
