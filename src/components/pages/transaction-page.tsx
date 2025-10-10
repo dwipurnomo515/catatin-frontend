@@ -33,42 +33,33 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 import FilterTransaction from "../hooks/filter-transaction-hooks";
-import ModalAddTransaction from "../modal/modal-add-transaction";
-import ModalEditTransaction from "../modal/modal-edit-transaction";
+import GetCategory from "../hooks/get-category";
+import GetTransaction from "../hooks/get-transaction";
 import { AlertDelete } from "../modal/alert-delete";
+import ModalAddTransaction from "../modal/modal-add-transaction";
 import ModalCategory from "../modal/modal-category";
+import ModalEditTransaction from "../modal/modal-edit-transaction";
 
 export default function Transactions() {
-  const categories = [
-    "Salary",
-    "Freelance",
-    "Bonus",
-    "Investment", // Income categories
-    "Food",
-    "Transport",
-    "Entertainment",
-    "Health",
-    "Education",
-    "Utilities",
-    "Shopping",
-  ];
+  const { categories } = GetCategory();
+  const { formatCurrency } = FilterTransaction();
 
-  const {
-    dateFrom,
-    dateTo,
-    searchTerm,
-    setSearchTerm,
-    filterCategory,
-    filterType,
-    filteredTransactions,
-    formatCurrency,
-    setDateFrom,
-    setDateTo,
-    setFilterCategory,
-    setFilterType,
-    transactions,
-  } = FilterTransaction();
+  const [filterType, setFilterType] = useState("all");
+  const [filterCategory, setFilterCategory] = useState("all");
+
+  const [dateFrom, setDateFrom] = useState<Date>();
+  const [dateTo, setDateTo] = useState<Date>();
+
+  const { transactions, isPending } = GetTransaction({
+    type: filterType,
+    category_id: filterCategory,
+    start: dateFrom ? format(dateFrom, "yyyy-MM-dd") : undefined,
+    end: dateTo ? format(dateTo, "yyyy-MM-dd") : undefined,
+  });
+
+  const { getCategoryName } = GetCategory();
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -101,12 +92,7 @@ export default function Transactions() {
               <Label>Search</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder="Search transactions..." className="pl-10" />
               </div>
             </div>
             <div className="space-y-2">
@@ -144,9 +130,9 @@ export default function Transactions() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  {categories?.map((category) => (
+                    <SelectItem key={category.id} value={String(category.id)}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -261,87 +247,83 @@ export default function Transactions() {
             <div>
               <CardTitle>Transaction List</CardTitle>
               <CardDescription>
-                Showing {filteredTransactions.length} of {transactions.length}{" "}
+                Showing {transactions?.length} of {transactions?.length}{" "}
                 transactions
               </CardDescription>
             </div>
-            <Badge variant="secondary">
-              Total:{" "}
-              {formatCurrency(
-                filteredTransactions.reduce(
-                  (sum, t) =>
-                    t.type === "income" ? sum + t.amount : sum - t.amount,
-                  0
-                )
-              )}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {filteredTransactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-center space-x-4">
+          {isPending || !getCategoryName
+            ? ""
+            : transactions?.map((transaction) => (
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    transaction.type === "income"
-                      ? "bg-success/20 text-success"
-                      : "bg-destructive/20 text-destructive"
-                  }`}
+                  key={transaction.id}
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                 >
-                  {transaction.type === "income" ? (
-                    <ArrowUpCircle className="h-6 w-6" />
-                  ) : (
-                    <ArrowDownCircle className="h-6 w-6" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">
-                    {transaction.description}
-                  </p>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {transaction.category}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {transaction.date}
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        transaction.type === "income"
+                          ? "bg-success/20 text-success"
+                          : "bg-destructive/20 text-destructive"
+                      }`}
+                    >
+                      {transaction.type === "income" ? (
+                        <ArrowUpCircle className="h-6 w-6" />
+                      ) : (
+                        <ArrowDownCircle className="h-6 w-6" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {transaction.description}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {getCategoryName(transaction.category_id)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {transaction.date}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span
+                      className={`font-semibold text-lg ${
+                        transaction.type === "income"
+                          ? "text-success"
+                          : "text-destructive"
+                      }`}
+                    >
+                      {transaction.type === "income" ? "+" : "-"}
+                      {formatCurrency(Number(transaction.amount))}
                     </span>
+                    <div className="flex space-x-2">
+                      <ModalEditTransaction
+                        transaction={transaction}
+                        triger={
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+
+                      <AlertDelete
+                        id={transaction.id}
+                        invalidate="transaction"
+                        url="transactions"
+                        trigger={
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span
-                  className={`font-semibold text-lg ${
-                    transaction.type === "income"
-                      ? "text-success"
-                      : "text-destructive"
-                  }`}
-                >
-                  {transaction.type === "income" ? "+" : "-"}
-                  {formatCurrency(transaction.amount)}
-                </span>
-                <div className="flex space-x-2">
-                  <ModalEditTransaction
-                    triger={
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    }
-                  />
-
-                  <AlertDelete
-                    trigger={
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </CardContent>
       </Card>
     </div>

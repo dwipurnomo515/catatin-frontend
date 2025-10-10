@@ -15,7 +15,7 @@ import type { ReactNode } from "react";
 import { toast } from "sonner";
 
 type Delete = {
-  id: string;
+  id?: number;
   trigger: ReactNode;
   invalidate: string;
   url: string;
@@ -42,7 +42,7 @@ export function AlertDelete({ trigger, id, url, invalidate }: Delete) {
     },
   });
 
-  const onSubmit = async (data: string) => {
+  const onSubmit = async (data: number) => {
     await mutateAsync(data);
   };
 
@@ -60,7 +60,7 @@ export function AlertDelete({ trigger, id, url, invalidate }: Delete) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => onSubmit(id)}
+            onClick={() => onSubmit(id || NaN)}
             disabled={isPending}
             className="hover:bg-red-500 flex items-center justify-center gap-2"
           >

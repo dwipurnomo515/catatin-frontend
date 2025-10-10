@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -26,27 +27,24 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import type { TransactionSchemaDTO } from "@/schemas/transaction-schema";
+import GetCategory from "../hooks/get-category";
 
 export default function ModalEditTransaction({
   triger,
+  transaction,
 }: {
   triger: ReactNode;
+  transaction: TransactionSchemaDTO;
 }) {
-  const categories = [
-    "Salary",
-    "Freelance",
-    "Bonus",
-    "Investment",
-    "Food",
-    "Transport",
-    "Entertainment",
-    "Health",
-    "Education",
-    "Utilities",
-    "Shopping",
-  ];
+  const { isPending, categories } = GetCategory();
 
-  const { form, onSubmit } = EditTransactionHooks();
+  const { form, onSubmit, closeRef, editTransactionPending } =
+    EditTransactionHooks({ transaction });
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Dialog>
@@ -100,9 +98,7 @@ export default function ModalEditTransaction({
                             type="number"
                             placeholder="0"
                             {...field}
-                            onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
-                            }
+                            
                           />
                         </FormControl>
                         <FormMessage />
@@ -114,14 +110,14 @@ export default function ModalEditTransaction({
               <div className="space-y-2">
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="category_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
 
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        defaultValue={String(field.value)}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
@@ -129,9 +125,12 @@ export default function ModalEditTransaction({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
+                          {categories?.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={String(category.id)}
+                            >
+                              {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -177,7 +176,15 @@ export default function ModalEditTransaction({
             </div>
 
             <DialogFooter className="mt-4">
-              <Button type="submit">Save</Button>
+              <DialogClose asChild>
+                <Button
+                  ref={closeRef}
+                  disabled={editTransactionPending}
+                  type="submit"
+                >
+                  {editTransactionPending ? "Saving..." : "Save"}
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>
