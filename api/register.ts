@@ -4,7 +4,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const backendResponse = await fetch('https://catatinbe.great-site.net/api/register', {
+    const backendResponse = await fetch('https://catatinbe.great-site.net/index.php/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
