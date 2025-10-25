@@ -1,11 +1,11 @@
-import axios from "axios";
+import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
 export const useDashboardData = () => {
   return useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
-      const res = await axios.get("https://catatin-backend-production.up.railway.app/api/dashboard");
+      const res = await api.get("/dashboard");
       return res.data;
     },
   });
