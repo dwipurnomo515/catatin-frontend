@@ -19,10 +19,7 @@ import { Link } from "react-router";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import type { Transaction, CategoryBreakdown } from "@/schemas/dashboard";
 
-
-
 export default function Dashboard() {
-
   const { data, isLoading, isError } = useDashboardData();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -32,20 +29,18 @@ export default function Dashboard() {
     }).format(amount);
   };
 
+  if (isLoading) return <div>Loading dashboard...</div>;
+  if (isError || !data) return <div>Failed to load dashboard data</div>;
 
-    if (isLoading) return <div>Loading dashboard...</div>;
-    if (isError || !data) return <div>Failed to load dashboard data</div>;
+  const summary = {
+    totalIncome: data.total_income,
+    totalExpense: data.total_expense,
+    balance: data.balance,
+    monthlyGrowth: data.monthly_growth,
+  };
 
-    const summary = {
-      totalIncome: data.total_income,
-      totalExpense: data.total_expense,
-      balance: data.balance,
-      monthlyGrowth: data.monthly_growth,
-    };
-
-    const recentTransactions = data.recent_transactions;
-    const categories = data.category_breakdown;
-
+  const recentTransactions = data.recent_transactions;
+  const categories = data.category_breakdown;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -143,49 +138,51 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentTransactions.slice(0, 5).map((transaction : Transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        transaction.type === "income"
-                          ? "bg-success/20 text-success"
-                          : "bg-destructive/20 text-destructive"
-                      }`}
-                    >
-                      {transaction.type === "income" ? (
-                        <ArrowUpCircle className="h-5 w-5" />
-                      ) : (
-                        <ArrowDownCircle className="h-5 w-5" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium">{transaction.description}</p>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="secondary" className="text-xs">
-                          {transaction.category}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {transaction.date}
-                        </span>
+              {(recentTransactions || [])
+                .slice(0, 5)
+                .map((transaction: Transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          transaction.type === "income"
+                            ? "bg-success/20 text-success"
+                            : "bg-destructive/20 text-destructive"
+                        }`}
+                      >
+                        {transaction.type === "income" ? (
+                          <ArrowUpCircle className="h-5 w-5" />
+                        ) : (
+                          <ArrowDownCircle className="h-5 w-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium">{transaction.description}</p>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="secondary" className="text-xs">
+                            {transaction.category}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {transaction.date}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <span
+                      className={`font-semibold ${
+                        transaction.type === "income"
+                          ? "text-success"
+                          : "text-destructive"
+                      }`}
+                    >
+                      {transaction.type === "income" ? "+" : "-"}
+                      {formatCurrency(transaction.amount)}
+                    </span>
                   </div>
-                  <span
-                    className={`font-semibold ${
-                      transaction.type === "income"
-                        ? "text-success"
-                        : "text-destructive"
-                    }`}
-                  >
-                    {transaction.type === "income" ? "+" : "-"}
-                    {formatCurrency(transaction.amount)}
-                  </span>
-                </div>
-              ))}
+                ))}
             </CardContent>
           </Card>
         </div>
@@ -198,22 +195,26 @@ export default function Dashboard() {
               <CardDescription>This month’s breakdown</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {categories.map((category : CategoryBreakdown, index : number) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{category.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {category.percentage}%
-                    </span>
+              {(categories || []).map(
+                (category: CategoryBreakdown, index: number) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">
+                        {category.name}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {category.percentage}%
+                      </span>
+                    </div>
+                    <Progress value={category.percentage} className="h-2" />
+                    <div className="text-right">
+                      <span className="text-sm font-semibold">
+                        {formatCurrency(category.amount)}
+                      </span>
+                    </div>
                   </div>
-                  <Progress value={category.percentage} className="h-2" />
-                  <div className="text-right">
-                    <span className="text-sm font-semibold">
-                      {formatCurrency(category.amount)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                )
+              )}
             </CardContent>
           </Card>
         </div>
